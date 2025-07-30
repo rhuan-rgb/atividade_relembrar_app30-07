@@ -1,9 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import Checkbox from "expo-checkbox";
+import api from "../services/api";
+
 
 export default function CardToDos({ todos }) {
   const [isChecked, setChecked] = useState(todos.completed);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    async function fetchUserName() {
+      try {
+        const response = await api.getUserNameById(todos.userId);
+        setUserName(response.data.name);
+      } catch (error) {
+        console.log("Error fetching user name", error);
+      }
+    }
+
+    fetchUserName();
+  }, [todos.id]);  // Roda apenas quando o id mudar
 
   return (
     <View style={styles.card}>
@@ -24,6 +40,7 @@ export default function CardToDos({ todos }) {
           {todos.title}
         </Text>
       </View>
+      <Text style={styles.body}>Usuário: {userName}</Text>
     </View>
   );
 }
